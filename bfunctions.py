@@ -4,6 +4,7 @@ from bfimpl.bfunc import loadImplementation
 
 # Helpers
 
+
 def check_arguments(n, *args):
     for a in args:
         if type(a) is not int:
@@ -122,3 +123,13 @@ def equal(n):
 
     f = Function(function, fname, n, [(fname, code)])
     return f
+
+#Function table
+table = [
+    {"pattern": "I_([0-9]+)_([0-9]+)", "f": select},
+    {"pattern": "zero([0-9]+)", "f": zero},
+    {"pattern": "one([0-9]+)", "f": one},
+    {"pattern": "add([0-9]+)", "f": add},
+    {"pattern": "sub([0-9]+)", "f": sub},
+    {"pattern": "eq([0-9]+)", "f": equal}
+]
