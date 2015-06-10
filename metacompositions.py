@@ -1,7 +1,7 @@
 from adaptivenv import CompError, Composition, Metacomposition
 import random
 import hashlib
-
+import re
 
 def generate_id():
     randline = str(random.random()).encode('ASCII')
@@ -31,7 +31,7 @@ class MetaSuperposition(Metacomposition):
         main_composition = self.compositions[0]
 
         def function(self):
-            #Apply compositions
+            # Apply compositions
             functions = list(map(lambda x: x(*self.functions).function(), compositions))
             the_function = main_composition(*functions).function()
             return the_function
@@ -40,3 +40,18 @@ class MetaSuperposition(Metacomposition):
                                                                                       "__str__": stringifier,
                                                                                       "function": function})
         return new_composition
+
+
+# Meta table
+table = [
+    {"pattern": "MS", "f": MetaSuperposition}
+]
+
+
+def getMetacomp(fname):
+    for entry in table:
+        res = re.findall(entry["pattern"], fname)
+        if len(res) > 0:
+            f = entry["f"]
+            return f
+    return None

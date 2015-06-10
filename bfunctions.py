@@ -1,6 +1,6 @@
 from adaptivenv import Function, CompError
 from bfimpl.bfunc import loadImplementation
-
+import re
 
 # Helpers
 
@@ -124,7 +124,7 @@ def equal(n):
     f = Function(function, fname, n, [(fname, code)])
     return f
 
-#Function table
+# Function table
 table = [
     {"pattern": "I_([0-9]+)_([0-9]+)", "f": select},
     {"pattern": "zero([0-9]+)", "f": zero},
@@ -133,3 +133,14 @@ table = [
     {"pattern": "sub([0-9]+)", "f": sub},
     {"pattern": "eq([0-9]+)", "f": equal}
 ]
+
+
+def getFunction(fname):
+    for entry in table:
+        res = re.findall(entry["pattern"], fname)
+        if len(res) > 0:
+            res = res[0]
+            ar = list(map(lambda x: int(x), res))
+            f = entry["f"](*ar)
+            return f
+    return None

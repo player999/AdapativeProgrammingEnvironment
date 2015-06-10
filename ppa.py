@@ -4,6 +4,8 @@ import itertools
 import copy
 import random
 import hashlib
+import re
+
 
 # Helpers
 
@@ -11,6 +13,7 @@ def generate_id():
     randline = str(random.random()).encode('ASCII')
     identification = hashlib.sha256(randline).hexdigest()[1:10]
     return identification
+
 
 def check_arguments(n, *args):
     for a in args:
@@ -24,6 +27,8 @@ def join_sources(src):
     src = list(map(lambda x: x.src, list(src)))
     return list(itertools.chain(*src))
 
+
+# Compositions
 
 class PPASuperposition(Composition):
     def __init__(self, *args):
@@ -125,6 +130,7 @@ class PPABranch(Composition):
         func = Function(f, fname, self.functions[0].argc, new_src)
         return func
 
+
 def COMP_Inm(sel, size):
     if sel > size:
         raise CompError("Wrong arguments" % (size, sel))
@@ -148,3 +154,26 @@ def COMP_Inm(sel, size):
                                                                             "__str__": stringifier,
                                                                             "function": function})
     return new_composition
+
+
+# Composition table
+table = [
+    {"pattern": "(S)", "f": PPASuperposition},
+    {"pattern": "(For)", "f": PPALoop},
+    {"pattern": "(If)", "f": PPABranch},
+    {"pattern": "(CI)_([0-9]+)_([0-9]+)", "f": COMP_Inm}
+]
+
+
+def getComposition(fname):
+    for entry in table:
+        res = re.findall(entry["pattern"], fname)
+        if len(res) > 0:
+            res = res[0]
+            if len(res) > 1:
+                ar = list(map(lambda x: int(x), res[1:]))
+                f = entry["f"](*ar)
+            else:
+                f = entry["f"]
+            return f
+    return None

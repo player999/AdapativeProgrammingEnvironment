@@ -1,22 +1,29 @@
 from pyparsing import *
+from linker import find_function, find_composition, find_metacomp
+
 
 funcStack = []
 compStack = []
 valueStack = []
 symbolStack = {}
 
+
 def assignVar( str, loc, toks ):
     toks = toks.asList()
     symbolStack[toks[0]] = toks[1]
 
+
 def applyFunction( str, loc, toks ):
     valueStack.append(toks.asList())
+
 
 def applyComposition( str, loc, toks ):
     funcStack.append(toks.asList())
 
+
 def applyMeta( str, loc, toks ):
     compStack.append(toks.asList())
+
 
 lFapply  = Literal( "(" )
 rFapply  = Literal( ")" )
@@ -50,10 +57,12 @@ application = OneOrMore(Group(expression) | Group(assignment))
 
 pattern = application
 
-source = "Meta[wwE, e3asdas[ee, f, f], dfd]\n" \
-         "exs = LOL[wwE, vv[ee, f, f], dfd]\n" \
-         "main = mamka[wwE, exs[ee, f, f], dfd]\n"
+source = "cmp1 = MS<If, S, For>\n" \
+         "main = cmp1[I_2_3, add3, sub3]\n"
 
 if __name__ == "__main__":
     program = pattern.parseString(source)
     print(funcStack)
+    print(find_function("I_3_5")(1,2,3,4,5))
+    print(find_composition("CI_3_5"))
+    print(find_metacomp("MS"))
