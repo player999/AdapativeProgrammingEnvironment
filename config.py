@@ -1,6 +1,8 @@
 import json
 from adaptivenv import CompError
 
+configuration = {}
+
 def getConfig():
     try:
         conf = json.load(open("config.cfg","r"))
@@ -8,6 +10,7 @@ def getConfig():
         raise CompError("Can not find or load configuration file")
     if type(conf) is not dict:
         raise ("Configuration is not JSON dictionary")
+    conf.update(configuration)
     return conf
 
 def getImplementation():

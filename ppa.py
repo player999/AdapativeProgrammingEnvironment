@@ -137,7 +137,7 @@ def COMP_Inm(sel, size):
 
     def initializer(self, *args):
         if len(args) != size:
-            raise CompError("This is %d-ary composition, not %d-ary" % (size, sel))
+            raise CompError("This is %d-ary composition, not %d-ary" % (size, len(args)))
         Composition.__init__(self, args)
         self.functions = args
 
@@ -170,7 +170,7 @@ def getComposition(fname):
         res = re.findall(entry["pattern"], fname)
         if len(res) > 0:
             res = res[0]
-            if len(res) > 1:
+            if (len(res) > 1) and ((type(res) == list) or (type(res) == tuple)):
                 ar = list(map(lambda x: int(x), res[1:]))
                 f = entry["f"](*ar)
             else:
