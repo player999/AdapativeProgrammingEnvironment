@@ -3,6 +3,7 @@ import sys
 import srcparser
 import linker
 import config
+from bfimpl.bfunc import compile
 
 
 if __name__ == "__main__":
@@ -18,3 +19,6 @@ if __name__ == "__main__":
     resolved = linker.link_functions(srcparser.valueSymList, srcparser.funcSymList, srcparser.compSymList)
     if arguments.args:
         print(resolved(*arguments.args))
+
+    if arguments.odir != None:
+        compile(resolved)

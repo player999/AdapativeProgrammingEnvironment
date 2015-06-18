@@ -100,6 +100,39 @@ class PPALoop(Composition):
         return func
 
 
+class PPACaseof(Composition):
+    def __init__(self, *args):
+        for i in range(0, len(args)):
+            if args[i].argc != args[0].argc:
+                raise CompError("Not equal argument count for functions in case")
+        if len(args) < 3:
+            raise CompError("Not enough arguments for Caseof")
+        Composition.__init__(self, args)
+
+    def __str__(self):
+        line = "Case of: \n"
+        for f in self.functions:
+            line += str(f)
+        return line
+
+    def function(self):
+        imp = loadImplementation("caseof")
+        (fname, code) = imp(self.functions)
+
+        def f(*args):
+            check_arguments(self.functions[0].argc, *args)
+            pred = self.functions[0](*args)
+            if pred > len(self.functions) - 2:
+                pred = len(self.functions) - 1
+            result = self.functions[pred](*args)
+            return result
+
+        new_src = join_sources(self.functions)
+        new_src.append((fname, code))
+        func = Function(f, fname, self.functions[0].argc, new_src)
+        return func
+
+
 class PPABranch(Composition):
     def __init__(self, *args):
         if len(args) != 3:
@@ -161,6 +194,7 @@ table = [
     {"pattern": "(S)", "f": PPASuperposition},
     {"pattern": "(For)", "f": PPALoop},
     {"pattern": "(If)", "f": PPABranch},
+    {"pattern": "(Caseof)", "f":PPACaseof},
     {"pattern": "(CI)_([0-9]+)_([0-9]+)", "f": COMP_Inm}
 ]
 

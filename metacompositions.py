@@ -13,6 +13,7 @@ class MetaSuperposition(Metacomposition):
     def __init__(self, *args):
         if len(args) < 2:
             raise CompError("Too few functions for metasuperposition")
+
         Metacomposition.__init__(self, args, "MetaSuperposition")
         self.composition_id = generate_id()
 
