@@ -40,6 +40,7 @@ class PPASuperposition(Composition):
         for i in range(1, len(args)):
             if args[i].argc != args[1].argc:
                 raise CompError("Not equal argument count for functions in superposition")
+        self.source_pattern = "S"
 
     def __str__(self):
         line = "Superposition of: \n"
@@ -73,6 +74,7 @@ class PPALoop(Composition):
         for i in range(0, len(args)):
             if args[i].argc != len(args) - 1:
                 raise CompError("Not equal argument count for functions in loop")
+        self.source_pattern = "For"
 
     def __str__(self):
         line = "Loop of: \n"
@@ -108,6 +110,7 @@ class PPACaseof(Composition):
         if len(args) < 3:
             raise CompError("Not enough arguments for Caseof")
         Composition.__init__(self, args)
+        self.source_pattern = "Caseof"
 
     def __str__(self):
         line = "Case of: \n"
@@ -138,6 +141,7 @@ class PPABranch(Composition):
         if len(args) != 3:
             raise CompError("Not adequate function count")
         Composition.__init__(self, args)
+        self.source_pattern = "If"
 
     def __str__(self):
         line = "Branch of: \n"
@@ -173,6 +177,7 @@ def COMP_Inm(sel, size):
             raise CompError("This is %d-ary composition, not %d-ary" % (size, len(args)))
         Composition.__init__(self, args)
         self.functions = args
+        self.source_pattern = "CI_%d_%d" % (size, sel)
 
     def stringifier(self):
             line = self.__class__.__name__ + " of: \n"
@@ -184,20 +189,23 @@ def COMP_Inm(sel, size):
             return self.functions[sel - 1]
 
     new_composition = type("inm_" + generate_id(), (Composition,), {"__init__": initializer,
-                                                                            "__str__": stringifier,
-                                                                            "function": function})
+                                                                    "__str__": stringifier,
+                                                                    "function": function})
     return new_composition
 
 
 # Composition table
 table = [
-    {"pattern": "(S)", "f": PPASuperposition},
-    {"pattern": "(For)", "f": PPALoop},
-    {"pattern": "(If)", "f": PPABranch},
-    {"pattern": "(Caseof)", "f":PPACaseof},
-    {"pattern": "(CI)_([0-9]+)_([0-9]+)", "f": COMP_Inm}
+    {"pattern": "(S)",      "f": PPASuperposition, "source_name":"S"},
+    {"pattern": "(For)",    "f": PPALoop,          "source_name":"For"},
+    {"pattern": "(If)",     "f": PPABranch,        "source_name":"IF"},
+    {"pattern": "(Caseof)", "f": PPACaseof,        "source_name":"Caseof"},
+    {"pattern": "(CI)_([0-9]+)_([0-9]+)", "f": COMP_Inm, "source_name":"CI_%d_%d"}
 ]
 
+def getCompositionNames():
+    names = list(map(lambda x: x["source_name"], table))
+    return names
 
 def getComposition(fname):
     for entry in table:
@@ -211,3 +219,4 @@ def getComposition(fname):
                 f = entry["f"]
             return f
     return None
+

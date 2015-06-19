@@ -126,12 +126,12 @@ def equal(n):
 
 # Function table
 table = [
-    {"pattern": "I_([0-9]+)_([0-9]+)", "f": select},
-    {"pattern": "zero([0-9]+)", "f": zero},
-    {"pattern": "one([0-9]+)", "f": one},
-    {"pattern": "add([0-9]+)", "f": add},
-    {"pattern": "sub([0-9]+)", "f": sub},
-    {"pattern": "eq([0-9]+)", "f": equal}
+    {"pattern": "I_([0-9]+)_([0-9]+)", "f": select, "genpattern": "I_%d_%d", "name": "Selector", "args": ["Index", "Arity"]},
+    {"pattern": "zero([0-9]+)", "f": zero, "genpattern": "zero%d", "name": "Zero", "args": ["Arity"]},
+    {"pattern": "one([0-9]+)", "f": one, "genpattern": "one%d", "name": "One", "args": ["Arity"]},
+    {"pattern": "add([0-9]+)", "f": add, "genpattern": "add%d", "name": "Add", "args": ["Arity"]},
+    {"pattern": "sub([0-9]+)", "f": sub, "genpattern": "sub%d", "name": "Sub", "args": ["Arity"]},
+    {"pattern": "eq([0-9]+)", "f": equal, "genpattern": "eq%d", "name": "Equal", "args": ["Arity"]}
 ]
 
 
@@ -143,4 +143,10 @@ def getFunction(fname):
             ar = list(map(lambda x: int(x), res))
             f = entry["f"](*ar)
             return f
+    return None
+
+def getFunctionEntry(fname):
+    for entry in table:
+        if fname == entry["name"]:
+            return entry
     return None

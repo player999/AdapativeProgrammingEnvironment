@@ -2,6 +2,57 @@ import config
 from adaptivenv import CompError
 
 
+def get_function_parameter(fname, parameter):
+    modlist = config.getConfig()["functions"]
+    for mod in modlist:
+        mod = __import__(mod, fromlist=['getFunctionEntry'])
+        f = getattr(mod, 'getFunctionEntry')
+        if f(fname):
+            return f(fname)[parameter]
+    return None
+
+
+def list_reductions():
+    modlist = config.getConfig()["reductions"]
+    red_list = []
+    for mod in modlist:
+        mod = __import__(mod, fromlist=['table'])
+        t = getattr(mod, 'table')
+        reds = list(map(lambda x: x["name"], t))
+        red_list.extend(reds)
+    return red_list
+
+
+def list_functions():
+    modlist = config.getConfig()["functions"]
+    f_list = []
+    for mod in modlist:
+        mod = __import__(mod, fromlist=['table'])
+        t = getattr(mod, 'table')
+        fs = list(map(lambda x: x["name"], t))
+        f_list.extend(fs)
+    return f_list
+
+
+def list_compositions():
+    modlist = config.getConfig()["compositions"]
+    comp_list = []
+    for mod in modlist:
+        mod = __import__(mod, fromlist=['getCompositionNames'])
+        f = getattr(mod, 'getCompositionNames')
+        comp_list.extend(f())
+    return comp_list
+
+
+def find_reduction(rname):
+    modlist = config.getConfig()["reductions"]
+    for mod in modlist:
+        mod = __import__(mod, fromlist=['getReduction'])
+        f = getattr(mod, 'getReduction')
+        return f(rname)
+    return None
+
+
 def find_function(fname):
     modlist = config.getConfig()["functions"]
     for mod in modlist:
@@ -9,7 +60,7 @@ def find_function(fname):
         f = getattr(mod, 'getFunction')
         if f(fname):
             return f(fname)
-        return None
+    return None
 
 
 def find_composition(fname):
@@ -52,7 +103,6 @@ def resolve_composition_symbol(comp, fsym, csym):
     else:
         raise CompError("Linker error c")
     return comp
-
 
 
 def resolve_function_symbol(program, fsym, csym):
@@ -116,10 +166,10 @@ def generate_function(program):
 
     return result
 
+
 def link_functions(vsym, fsym, csym):
     if "main" not in fsym.keys():
         raise CompError("No entry point in the program")
-
     program = fsym["main"]
     program = resolve_function_symbol(program, fsym, csym)
     function = generate_function(program)

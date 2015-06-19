@@ -16,6 +16,8 @@ class MetaSuperposition(Metacomposition):
 
         Metacomposition.__init__(self, args, "MetaSuperposition")
         self.composition_id = generate_id()
+        self.source_pattern = self.__class__.__name__
+
 
     def composition(self):
         def initializer(self, *args):

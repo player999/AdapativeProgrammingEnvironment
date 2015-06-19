@@ -4,9 +4,12 @@ import srcparser
 import linker
 import config
 from bfimpl.bfunc import compile
-
+from adaptivegui import start_windowed
 
 if __name__ == "__main__":
+    if len(sys.argv) == 1:
+       start_windowed(sys.argv)
+
     aparser = argparse.ArgumentParser(prog='adaptive')
     aparser.add_argument('--src', type=str, required=True, help='file of source code')
     aparser.add_argument('--odir', type=str, help='output direcotry')
@@ -22,3 +25,4 @@ if __name__ == "__main__":
 
     if arguments.odir != None:
         compile(resolved)
+
