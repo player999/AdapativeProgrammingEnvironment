@@ -5,6 +5,8 @@ from functools import partial
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
+import traceback
+
 program = "main"
 
 
@@ -27,14 +29,73 @@ class LabeledLinedit(QHBoxLayout):
     def get_value(self):
         return self.ledit.text()
 
-    def __del__(self):
-        self.removeItem(self.itemAt(0))
-        self.removeItem(self.itemAt(0))
-        self.ledit.hide()
-        self.label.hide()
-        del self.ledit
-        del self.label
+    def mydelete(self):
+        label_item = self.itemAt(0)
+        ledit_item = self.itemAt(1)
+        label = label_item.widget()
+        ledit = ledit_item.widget()
+        ledit.hide()
+        label.hide()
+        self.removeItem(label_item)
+        self.removeItem(ledit_item)
+        label.deleteLater()
+        ledit.deleteLater()
+        self.deleteLater()
 
+
+class FunctionArguments(QVBoxLayout):
+    def __init__(self, reduction, parent=None):
+        super(QVBoxLayout, self).__init__(parent)
+        self.fieldlist = []
+        red = find_reduction(reduction)
+        ars = red.getFields()
+        for ar in ars:
+            if ar["count"] == 1:
+                freader = FunctionReader(ar["name"])
+                self.fieldlist.append(freader)
+                self.addLayout(freader)
+
+            if ar["count"] > 1:
+                for i in range(0, ar["count"]):
+                    freader = FunctionReader(ar["name"] + " " + str(i))
+                    self.fieldlist.append(freader)
+                    self.addLayout(freader)
+
+            if ar["count"] == -1:
+                freader = FunctionReader(ar["name"] + " 0")
+                self.addLayout(freader)
+                self.fieldlist.append(freader)
+                but = QPushButton("Add More")
+                but.clicked.connect(partial(self.add_field, but, ar["name"], 1))
+                self.addWidget(but)
+
+    @pyqtSlot(QPushButton, str, int)
+    def add_field(self, but, name, idx):
+        but.disconnect()
+        but.clicked.connect(partial(self.add_field, but, name, idx + 1))
+        num = self.indexOf(but)
+        lay = FunctionReader(name + " " + str(num))
+        self.fieldlist.append(lay)
+        self.insertLayout(num, lay)
+
+    def get_functions(self):
+        funclist = list(map(lambda x: x.get_funcname(), self.fieldlist))
+        return funclist
+
+    def mydelete(self):
+        co = self.count()
+        for i in range(0, co):
+            item = self.itemAt(0)
+            lay = item.layout()
+            wid = item.widget()
+            if wid is not None:
+                if hasattr(wid, "hide"):
+                    wid.hide()
+                wid.deleteLater()
+            if lay is not None:
+                lay.mydelete()
+            self.removeItem(item)
+        self.deleteLater()
 
 class FunctionReader(QVBoxLayout):
     def __init__(self, name, parent=None):
@@ -60,7 +121,6 @@ class FunctionReader(QVBoxLayout):
             item = self.farguments.itemAt(0)
             lt = item.layout()
             self.farguments.removeItem(item)
-            del lt
 
         #Add arguments
         if self.selector.currentText() == "":
@@ -93,24 +153,25 @@ class FunctionReader(QVBoxLayout):
             funcname = pat % tuple(ars)
             return funcname
 
-    def __del__(self):
-        item = self.itemAt(0)
-        widget = item.widget()
-        self.removeItem(item)
-        widget.hide()
-        del widget
+    def mydelete(self):
+        #Clear faerguments
+        while self.farguments.itemAt(0):
+            item = self.farguments.itemAt(0)
+            lay = item.layout()
+            self.farguments.removeItem(item)
+            lay.mydelete()
 
-        item = self.itemAt(0)
-        widget = item.widget()
-        self.removeItem(item)
-        widget.hide()
-        del widget
-
-        item = self.itemAt(0)
-        lay = item.layout()
-        self.removeItem(item)
-        del lay
-
+        while self.itemAt(0):
+            item = self.itemAt(0)
+            widget = item.widget()
+            lay = item.layout()
+            self.removeItem(item)
+            if  lay != None:
+                lay.deleteLater()
+            if widget != None:
+                widget.hide()
+                widget.deleteLater()
+            self.deleteLater()
 
 class MainWindow(QWidget):
     def __init__(self, parent=None):
@@ -144,58 +205,27 @@ class ReduceWindow(QWidget):
             but.clicked.connect(partial(self.selected_reduction, red))
             redbut_layout.addWidget(but)
         layout.addLayout(redbut_layout)
-
-        self.functions = QVBoxLayout()
-
-        layout.addLayout(self.functions)
-
         self.submitButton = QPushButton("Submit")
+        self.submitButton.clicked.connect(self.display_functions)
         layout.addWidget(self.submitButton)
         self.setLayout(layout)
 
     @pyqtSlot(str)
     def selected_reduction(self, name):
-        #Clear Layout
-        lo = self.functions
-        co = lo.count()
-        for i in range(0, co):
-            item = lo.itemAt(0)
-            wid = item.widget()
-            lay = item.layout()
-            lo.removeItem(item)
-            if wid != None:
-                wid.hide()
-                del wid
-            if lay != None:
-                del lay
+        if self.findChild(FunctionArguments, name="fargs"):
+            lay = self.layout()
+            item = lay.itemAt(2) #Position of arguments
+            lay.removeItem(item)
+            item.layout().mydelete()
 
-        #Resize window
-        self.setMaximumHeight(5)
-        self.update()
+        self.fargs = FunctionArguments(name)
+        self.fargs.setObjectName("fargs")
+        self.layout().insertLayout(2, self.fargs)
+        self.adjustSize()
+        return
 
-        red = find_reduction(name)
-        ars = red.getFields()
-        for ar in ars:
-            if ar["count"] == 1:
-                self.functions.addLayout(FunctionReader(ar["name"]))
-
-            if ar["count"] > 1:
-                for i in range(0, ar["count"]):
-                    self.functions.addLayout(FunctionReader(ar["name"] + " " + str(i)))
-
-            if ar["count"] == -1:
-                self.functions.addLayout(FunctionReader(ar["name"] + " 0"))
-                but = QPushButton("Add More")
-                but.clicked.connect(partial(self.add_field, but, ar["name"], 1))
-                self.functions.addWidget(but)
-
-    @pyqtSlot(QPushButton, str, int)
-    def add_field(self, but, name, idx):
-        but.disconnect()
-        but.clicked.connect(partial(self.add_field, but, name, idx + 1))
-        num = self.functions.indexOf(but)
-        lay = FunctionReader(name + " " + str(num))
-        self.functions.insertLayout(num, lay)
+    def display_functions(self):
+        QMessageBox.information(self, "Functions", str(self.fargs.get_functions()))
 
 
 def start_windowed(argv):
