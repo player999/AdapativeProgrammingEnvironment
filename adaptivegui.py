@@ -1,21 +1,50 @@
 import sys
-from linker import list_reductions, list_functions, get_function_parameter, find_reduction
+from linker import list_reductions, list_functions, get_function_parameter, find_reduction, find_function
 from functools import partial
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-import traceback
 
 program = "main"
 
+definitions = {}
 
 def funcname_all():
-    return list_functions()
+    local_functions = list(definitions.keys())
+    local_functions.extend(list_functions())
+    return local_functions
 
 
 def get_function_parameter_all(fname, param):
+    if fname in definitions.keys():
+        return []
     return get_function_parameter(fname, param)
+
+
+def next_function():
+    function = check_function(definitions["main"])
+    return function
+
+
+def check_function(reduction):
+    ars = reduction[1]
+    for ar in ars:
+        if isundefined(ar):
+            if ar in definitions.keys():
+                res = check_function(definitions[ar])
+                if res is not None:
+                    return res
+            else:
+                return ar
+    return None
+
+
+def isundefined(fname):
+    if find_function(fname) is not None:
+        return False
+
+    return True
 
 
 class LabeledLinedit(QHBoxLayout):
@@ -120,6 +149,7 @@ class FunctionReader(QVBoxLayout):
         for i in range(0, item_count):
             item = self.farguments.itemAt(0)
             lt = item.layout()
+            lt.mydelete()
             self.farguments.removeItem(item)
 
         #Add arguments
@@ -180,9 +210,14 @@ class MainWindow(QWidget):
         self.setMaximumHeight(5)
         layout = QVBoxLayout()
         self.submitButton = QPushButton("Reduce!")
+        self.submitButton.clicked.connect(self.start_reduction)
         layout.addWidget(self.submitButton)
         self.setLayout(layout)
         self.setWindowTitle("Adaptive")
+
+    def start_reduction(self):
+        reduce_window = ReduceWindow("main")
+        reduce_window.show()
 
 
 class ReduceWindow(QWidget):
@@ -190,13 +225,13 @@ class ReduceWindow(QWidget):
         super(ReduceWindow, self).__init__(parent)
         self.setFixedWidth(400)
         self.setMaximumHeight(5)
-
+        self.resolvname = resolvname
         self.setWindowTitle("Reduce function \"%s\"" % resolvname)
 
         layout = QVBoxLayout()
 
-        label_func = QLabel("Reducing function \"%s\"" % resolvname)
-        layout.addWidget(label_func)
+        self.label_func = QLabel("Reducing function \"%s\"" % resolvname)
+        layout.addWidget(self.label_func)
 
         reds = list_reductions()
         redbut_layout = QHBoxLayout()
@@ -205,35 +240,49 @@ class ReduceWindow(QWidget):
             but.clicked.connect(partial(self.selected_reduction, red))
             redbut_layout.addWidget(but)
         layout.addLayout(redbut_layout)
-        self.submitButton = QPushButton("Submit")
-        self.submitButton.clicked.connect(self.display_functions)
+        self.submitButton = QPushButton("Next")
+        self.submitButton.clicked.connect(self.accept_reduction)
         layout.addWidget(self.submitButton)
         self.setLayout(layout)
+        self.reduction = None
 
-    @pyqtSlot(str)
-    def selected_reduction(self, name):
+    def clear_functions(self):
         if self.findChild(FunctionArguments, name="fargs"):
             lay = self.layout()
             item = lay.itemAt(2) #Position of arguments
             lay.removeItem(item)
             item.layout().mydelete()
 
+    @pyqtSlot(str)
+    def selected_reduction(self, name):
+        self.clear_functions()
+        self.reduction = name
         self.fargs = FunctionArguments(name)
         self.fargs.setObjectName("fargs")
         self.layout().insertLayout(2, self.fargs)
         self.adjustSize()
         return
 
-    def display_functions(self):
-        QMessageBox.information(self, "Functions", str(self.fargs.get_functions()))
+    def accept_reduction(self):
+        global definitions
+        reduction = {self.resolvname: [self.reduction, self.fargs.get_functions()]}
+        definitions.update(reduction)
+        fname = next_function()
+        if fname == None:
+            self.hide()
+            self.deleteLater()
+        self.resolvname = fname
+        self.setWindowTitle("Reduce function \"%s\"" % fname)
+        self.label_func.setText("Reducing function \"%s\"" % fname)
+        self.clear_functions()
+        self.adjustSize()
+        print(definitions)
 
 
 def start_windowed(argv):
     app = QApplication(argv)
     main_window = MainWindow()
     main_window.show()
-    reduce_window = ReduceWindow("main")
-    reduce_window.show()
     sys.exit(app.exec_())
 
 
