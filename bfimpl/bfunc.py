@@ -14,7 +14,9 @@ def generateId():
     identification = hashlib.sha256(randline).hexdigest()[1:10]
     return identification
 
+
 def compile(func):
     g = __import__("bfimpl.%s.compile" % (getImplementation()), fromlist=['compile'])
     f = getattr(g, 'compile')
-    f(func)
+    src = f(func)
+    return src

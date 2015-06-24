@@ -1,14 +1,19 @@
 import sys
 from linker import list_reductions, list_functions, get_function_parameter, find_reduction, find_function
+import linker
 from functools import partial
+import translatereduction
+import srcparser
+from bfimpl.bfunc import compile
+from adaptivenv import CompError
+
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-
-
-program = "main"
+from PyQt5.QtGui import QFont
 
 definitions = {}
+
 
 def funcname_all():
     local_functions = list(definitions.keys())
@@ -203,21 +208,35 @@ class FunctionReader(QVBoxLayout):
                 widget.deleteLater()
             self.deleteLater()
 
+
 class MainWindow(QWidget):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setFixedWidth(200)
         self.setMaximumHeight(5)
         layout = QVBoxLayout()
-        self.submitButton = QPushButton("Reduce!")
-        self.submitButton.clicked.connect(self.start_reduction)
-        layout.addWidget(self.submitButton)
+
+        self.reduce_button = QPushButton("Reduce!")
+        self.reduce_button.clicked.connect(self.start_reduction)
+        layout.addWidget(self.reduce_button)
+
+        self.composition_button = QPushButton("Open Composition")
+        self.composition_button.clicked.connect(self.open_code)
+        layout.addWidget(self.composition_button)
+
         self.setLayout(layout)
         self.setWindowTitle("Adaptive")
 
     def start_reduction(self):
         reduce_window = ReduceWindow("main")
         reduce_window.show()
+
+    def open_code(self):
+        fname = QFileDialog.getOpenFileName(self, "Find Composition Source")[0]
+        src = open(fname, "r").read()
+        global srcv
+        srcv = SourceView(src)
+        srcv.show()
 
 
 class ReduceWindow(QWidget):
@@ -271,12 +290,61 @@ class ReduceWindow(QWidget):
         if fname == None:
             self.hide()
             self.deleteLater()
+            src = translatereduction.reduction2ppa(definitions)
+            global srcv
+            srcv = SourceView(src)
+            srcv.show()
+            return
+
         self.resolvname = fname
         self.setWindowTitle("Reduce function \"%s\"" % fname)
         self.label_func.setText("Reducing function \"%s\"" % fname)
         self.clear_functions()
         self.adjustSize()
-        print(definitions)
+
+
+class CompiledView(QWidget):
+    def __init__(self, source, parent=None):
+        super(CompiledView, self).__init__(parent)
+        self.setWindowTitle("Compiled view")
+        self.lay = QVBoxLayout()
+        self.code_area = QTextEdit()
+        font = QFont("Monospace")
+        font.setStyleHint(QFont.TypeWriter)
+        self.code_area.setFont(font)
+        self.code_area.setText(source)
+        self.lay.addWidget(self.code_area)
+        self.setLayout(self.lay)
+        self.setMinimumWidth(600)
+
+
+class SourceView(QWidget):
+    def __init__(self, source, parent=None):
+        super(SourceView, self).__init__(parent)
+        self.setWindowTitle("Source view")
+        self.lay = QVBoxLayout()
+        self.source = source
+        self.code_area = QTextEdit()
+        self.compile = QPushButton("Compile")
+        self.compile.clicked.connect(self.pressed_compile)
+        self.code_area.setText(source)
+        self.lay.addWidget(self.code_area)
+        self.lay.addWidget(self.compile)
+        self.setLayout(self.lay)
+
+    def pressed_compile(self):
+        global compiled_view
+        try:
+            srcparser.parse_source(self.code_area.toPlainText())
+            resolved = linker.link_functions(srcparser.valueSymList, srcparser.funcSymList, srcparser.compSymList)
+            code = compile(resolved)
+            compiled_view = CompiledView(code)
+            compiled_view.show()
+            self.hide()
+            self.deleteLater()
+        except CompError as err:
+            QMessageBox.critical(self, "Compilation to syntax error", str(err))
+
 
 
 def start_windowed(argv):

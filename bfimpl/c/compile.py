@@ -33,12 +33,14 @@ def extractDefinitions(code):
 
 def compile(function):
     cfg = getConfig()
-    path = cfg["output_folder"]
     main_decl = ""
     main_defs = ""
     for file in function.src:
         main_decl += extractDeclarations(file[1])
         main_defs += extractDefinitions(file[1])
-    f = open(path + "/" + "main.c", "w")
-    f.write(main_decl + main_defs)
-    f.close()
+    if "output_folder" in cfg.keys():
+        path = cfg["output_folder"]
+        f = open(path + "/" + "main.c", "w")
+        f.write(main_decl + main_defs)
+        f.close()
+    return main_decl + main_defs
