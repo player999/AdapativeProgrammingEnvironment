@@ -19,7 +19,7 @@ class Function:
         else:
             raise CompError("Function name must be string")
 
-        if type(argc) == int:
+        if (type(argc) is int) or (type(argc) is str):
             self.argc = argc
         else:
             raise CompError("Argument count must be integer")
