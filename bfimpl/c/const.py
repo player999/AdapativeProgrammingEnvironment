@@ -20,4 +20,4 @@ int cons() {
 def generate(n, v):
     identification = generateId()
     code = PATTERN
-    return "cons%s" % identification, code
+    return "cons_%s" % identification, code

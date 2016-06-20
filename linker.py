@@ -70,7 +70,7 @@ def find_composition(fname):
         f = getattr(mod, 'getComposition')
         if f(fname):
             return f(fname)
-        return None
+    return None
 
 
 def find_metacomp(fname):
@@ -88,7 +88,7 @@ def resolve_composition_symbol(comp, fsym, csym):
         if find_metacomp(comp[0]):
             comp[0] = comp[0]
         else:
-            raise CompError("Unresolved metacomposition" % comp[0])
+            raise CompError("Unresolved metacomposition %s" % comp[0])
         for i in range(0, len(comp[1])):
             arg = comp[1][i]
             arg = resolve_composition_symbol(arg, fsym, csym)

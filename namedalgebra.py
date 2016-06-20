@@ -159,8 +159,9 @@ class NMDASuperposition(Composition):
         if len(args) < 2:
             raise CompError("Too few functions for superposition")
         Composition.__init__(self, args)
-        if args[0].argc != (len(args) - 1):
-            raise CompError("Bad argument count for functions-arguments")
+        if args[0].argc != 0:
+            if args[0].argc != (len(args) - 1):
+                raise CompError("Bad argument count for functions-arguments")
 
         a = None
         b = None
@@ -201,10 +202,10 @@ class NMDASuperposition(Composition):
 
 # Composition table
 table = [
-    {"pattern": "(NS)",      "f": NMDASuperposition, "source_name":"S"},
-    {"pattern": "(NAp)",     "f": NMDASuperposition, "source_name":"Ap"},
-    {"pattern": "(NWhile)",  "f": NMDASuperposition, "source_name":"While"},
-    {"pattern": "(NIf)",     "f": NMDASuperposition, "source_name":"If"}
+    {"pattern": "^(NS)$",      "f": NMDASuperposition, "source_name":"S"},
+    {"pattern": "^(NAp)$",     "f": NMDAApplication, "source_name":"Ap"},
+    {"pattern": "^(NWhile)$",  "f": NMDAWhile, "source_name":"While"},
+    {"pattern": "^(NIf)$",     "f": NMDAIf, "source_name":"If"}
 ]
 
 def getCompositionNames():

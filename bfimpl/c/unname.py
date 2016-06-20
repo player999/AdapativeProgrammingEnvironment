@@ -20,4 +20,4 @@ int unname() {
 def generate(n):
     identification = generateId()
     code = PATTERN
-    return "unname%s" % identification, code
+    return "unname_%s" % identification, code

@@ -20,4 +20,4 @@ int div() {
 def generate(n1, n2, n3):
     identification = generateId()
     code = PATTERN
-    return "div%s" % identification, code
+    return "div_%s" % identification, code

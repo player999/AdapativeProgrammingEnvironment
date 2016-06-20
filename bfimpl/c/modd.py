@@ -20,4 +20,4 @@ int modd() {
 def generate(n1, n2, n3):
     identification = generateId()
     code = PATTERN
-    return "modd%s" % identification, code
+    return "modd_%s" % identification, code

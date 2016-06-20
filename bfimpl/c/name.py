@@ -20,4 +20,4 @@ int name() {
 def generate(n):
     identification = generateId()
     code = PATTERN
-    return "name%s" % identification, code
+    return "name_%s" % identification, code

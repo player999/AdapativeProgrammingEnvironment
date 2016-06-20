@@ -196,11 +196,11 @@ def COMP_Inm(sel, size):
 
 # Composition table
 table = [
-    {"pattern": "(S)",      "f": PPASuperposition, "source_name":"S"},
-    {"pattern": "(For)",    "f": PPALoop,          "source_name":"For"},
-    {"pattern": "(If)",     "f": PPABranch,        "source_name":"IF"},
-    {"pattern": "(Caseof)", "f": PPACaseof,        "source_name":"Caseof"},
-    {"pattern": "(CI)_([0-9]+)_([0-9]+)", "f": COMP_Inm, "source_name":"CI_%d_%d"}
+    {"pattern": "^(S)$",      "f": PPASuperposition, "source_name":"S"},
+    {"pattern": "^(For)$",    "f": PPALoop,          "source_name":"For"},
+    {"pattern": "^(If)$",     "f": PPABranch,        "source_name":"IF"},
+    {"pattern": "^(Caseof)$", "f": PPACaseof,        "source_name":"Caseof"},
+    {"pattern": "^(CI)_([0-9]+)_([0-9]+)$", "f": COMP_Inm, "source_name":"CI_%d_%d"}
 ]
 
 def getCompositionNames():

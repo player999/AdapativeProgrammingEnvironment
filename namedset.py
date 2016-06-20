@@ -1,5 +1,6 @@
 from adaptivenv import CompError
 import copy
+import pyparsing
 
 class NamedSet:
     def __init__(self, a):
@@ -9,6 +10,8 @@ class NamedSet:
         if isinstance(a, int):
             self.value = a
             return
+        if isinstance(a, str):
+            a = parse_set(a)[0]
 
         if not isinstance(a, list):
             raise CompError("This is not named set")
@@ -28,3 +31,24 @@ class NamedSet:
         else:
             return "{" + ", ".join(list(map(lambda x: "(" + x[0] + ", " + str(x[1]) + ")", self.nset))) + "}"
 
+def parse_set(string):
+   leftSet = pyparsing.Literal("{")
+   rightSet = pyparsing.Literal("}")
+   leftPair = pyparsing.Literal("(")
+   rightPair = pyparsing.Literal(")")
+   integer = pyparsing.Word(pyparsing.nums)
+   name = pyparsing.Regex("[a-zA-Z]+[0-9a-zA-Z_]*")
+   namedsets = []
+
+   def parse_pairlist(str, loc, toks):
+       nset = []
+       for p in toks:
+           element = (p[0], int(p[1]))
+           nset.append(element)
+       namedsets.append(nset)
+
+   pair = pyparsing.Group(leftPair.suppress() + name + pyparsing.Literal(",").suppress() + integer + rightPair.suppress())
+   nset = (leftSet.suppress() + pyparsing.delimitedList(pair) + rightSet.suppress()).setParseAction(parse_pairlist)
+   nsets = pyparsing.OneOrMore(nset)
+   nsets.parseString(string)
+   return namedsets

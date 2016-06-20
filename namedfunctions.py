@@ -157,17 +157,17 @@ def equal(n):
 
 # Function table
 table = [
-    {"pattern": "overlap()", "f": overlap, "genpattern": "overlap", "name": "Overlap", "args": []},
-    {"pattern": "idfun_([0-9]+)", "f": idfun, "genpattern": "idfun", "name": "IdFun", "args": ["Value"]},
-    {"pattern": "nmdaequal_(.*?)", "f": equal, "genpattern": "nmdaequal", "name": "Nmdaequal", "args": ["Name"]},
+    {"pattern": "^overlap$", "f": overlap, "genpattern": "overlap", "name": "Overlap", "args": []},
+    {"pattern": "^idfun_([0-9a-zA-Z]+)$", "f": idfun, "genpattern": "idfun", "name": "IdFun", "args": ["Value"]},
+    {"pattern": "^equal_([0-9a-zA-Z]+)$", "f": equal, "genpattern": "nmdaequal", "name": "Nmdaequal", "args": ["Name"]},
     #{"pattern": "nmdagt()", "f": gt, "genpattern": "nmdagt", "name": "Nmdagt", "args": []},
     #{"pattern": "nmdaadd()", "f": add, "genpattern": "nmdaadd", "name": "Nmdaadd", "args": []},
     #{"pattern": "nmdasub()", "f": sub, "genpattern": "nmdasub", "name": "Nmdasub", "args": []},
-    {"pattern": "mod_(.*?)_(.*?)_(.*?)", "f": modd, "genpattern": "nmdamod", "name": "Nmdamod", "args": ["Name", "Name", "Name"]},
-    {"pattern": "div_(.*?)_(.*?)_(.*?)", "f": div, "genpattern": "nmdadiv", "name": "Nmdadiv", "args": ["Name", "Name", "Name"]},
-    {"pattern": "nmdaconst_(.*?)_(.*?)", "f": cons, "genpattern": "nmdaadd", "name": "Nmdaadd", "args": ["Name", "Value"]},
-    {"pattern": "name(.*?)", "f": name, "genpattern": "name_%s", "name": "Name", "args": ["Name"]},
-    {"pattern": "unname(.*?)", "f": unname, "genpattern": "unname_%s", "name": "Unname", "args": ["Name"]}
+    {"pattern": "^mod_([0-9a-zA-Z]+)_([0-9a-zA-Z]+)_([0-9a-zA-Z]+)$", "f": modd, "genpattern": "nmdamod", "name": "Nmdamod", "args": ["Name", "Name", "Name"]},
+    {"pattern": "^div_([0-9a-zA-Z]+)_([0-9a-zA-Z]+)_([0-9a-zA-Z]+)$", "f": div, "genpattern": "nmdadiv", "name": "Nmdadiv", "args": ["Name", "Name", "Name"]},
+    {"pattern": "^const_([0-9a-zA-Z]+)_([0-9a-zA-Z]+)$", "f": cons, "genpattern": "nmdaadd", "name": "Nmdaadd", "args": ["Name", "Value"]},
+    {"pattern": "^name_([0-9a-zA-Z]+)$", "f": name, "genpattern": "name_%s", "name": "Name", "args": ["Name"]},
+    {"pattern": "^unname_([0-9a-zA-Z]+)$", "f": unname, "genpattern": "unname_%s", "name": "Unname", "args": ["Name"]}
 ]
 
 
@@ -175,9 +175,18 @@ def getFunction(fname):
     for entry in table:
         res = re.findall(entry["pattern"], fname)
         if len(res) > 0:
-            res = res[0]
-            ar = list(map(lambda x: int(x), res))
-            f = entry["f"](*ar)
+            if isinstance(res[0], tuple):
+                res = res[0]
+            if entry["args"] != []:
+                ar = []
+                for i in range(0, len(res)):
+                    if entry["args"][i] == "Name":
+                        ar.append(res[i])
+                    elif entry["args"][i] == "Value":
+                        ar.append(int(res[i]))
+                f = entry["f"](*ar)
+            else:
+                f = entry["f"]()
             return f
     return None
 
