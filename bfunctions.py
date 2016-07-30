@@ -124,6 +124,24 @@ def equal(n):
     f = Function(function, fname, n, [(fname, code)])
     return f
 
+# Generate CV matrix of ones
+def cvOne(n, h, w):
+    imp = loadImplementation("cv_one")
+    (fname, code) = imp(n, h, w)
+    def function(*args):
+        CompError("cvOne not implemented")
+    f = Function(function, fname, n, [(fname, code)])
+    return f
+
+# Threshold cv matrix
+def cvThresh(n, t):
+    imp = loadImplementation("cv_thresh")
+    (fname, code) = imp(n, t)
+    def function(*args):
+        CompError("cvThresh not implemented")
+    f = Function(function, fname, n, [(fname, code)])
+    return f
+
 # Function table
 table = [
     {"pattern": "I_([0-9]+)_([0-9]+)", "f": select, "genpattern": "I_%d_%d", "name": "Selector", "args": ["Index", "Arity"]},
@@ -131,7 +149,9 @@ table = [
     {"pattern": "one([0-9]+)", "f": one, "genpattern": "one%d", "name": "One", "args": ["Arity"]},
     {"pattern": "add([0-9]+)", "f": add, "genpattern": "add%d", "name": "Add", "args": ["Arity"]},
     {"pattern": "sub([0-9]+)", "f": sub, "genpattern": "sub%d", "name": "Sub", "args": ["Arity"]},
-    {"pattern": "eq([0-9]+)", "f": equal, "genpattern": "eq%d", "name": "Equal", "args": ["Arity"]}
+    {"pattern": "eq([0-9]+)", "f": equal, "genpattern": "eq%d", "name": "Equal", "args": ["Arity"]},
+    {"pattern": "cvOnes([0-9]+)_([0-9]+)_([0-9]+)", "f": cvOne, "genpattern": "cv_ones_%d_%d", "name": "Ones", "args": ["Arity", "Height", "Width"]},
+    {"pattern": "cvThresh([0-9]+)_([0-9]+)", "f": cvThresh, "genpattern": "cv_threshold_%d", "name": "Thresh", "args": ["Arity", "Thresh"]},
 ]
 
 
