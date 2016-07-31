@@ -30,8 +30,5 @@ if __name__ == "__main__":
         elif conf["algebra"] == "ppa":
             ars = list(map(int, arguments.args))
             print(resolved(*ars))
-
-    #
-    # if arguments.odir != None:
-    #     compile(resolved)
-
+    if arguments.odir != None:
+        srcs = compile(resolved)

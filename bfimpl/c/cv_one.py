@@ -22,6 +22,6 @@ def generate(n, h, w):
     code = PATTERN
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
-    code = code.replace("%h%", h)
-    code = code.replace("%w%", w)
+    code = code.replace("%h%", str(h))
+    code = code.replace("%w%", str(w))
     return "cv_ones_%d_%d_%s" % (h, w, identification), code

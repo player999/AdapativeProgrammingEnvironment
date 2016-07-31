@@ -1,5 +1,14 @@
 from config import getConfig
+import os
 
+def makeHeader():
+    cfg = getConfig()
+    header = ""
+    for entry in cfg["frameworks"]:
+        header_dir = os.path.dirname(os.path.realpath(__file__))
+        header_file = "%s/%s.header" % (header_dir, entry)
+        header += open(header_file, "r").read()
+    return header
 
 def extractDeclarations(code):
     lines = code.split("\n")
@@ -41,6 +50,6 @@ def compile(function):
     if "output_folder" in cfg.keys():
         path = cfg["output_folder"]
         f = open(path + "/" + "main.c", "w")
-        f.write(main_decl + main_defs)
+        f.write(makeHeader() + main_decl + main_defs)
         f.close()
     return main_decl + main_defs

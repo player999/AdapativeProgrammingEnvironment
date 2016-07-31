@@ -23,5 +23,5 @@ def generate(n, thresh):
     code = PATTERN
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
-    code = code.replace("%thresh%", thresh)
+    code = code.replace("%thresh%", str(thresh))
     return "cv_thresh_%d_%s" % (thresh, identification), code
