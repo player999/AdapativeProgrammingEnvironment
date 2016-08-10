@@ -2,10 +2,10 @@ from bfimpl.bfunc import generateId
 
 
 PATTERN = """//Start:Declarations
-int cv_thresh_%thresh%_%ID%(%ARGS%);
+Mat cv_thresh_%thresh%_%ID%(%ARGS%);
 //Stop:Declarations
 //Start:Definitions
-int cv_thresh_%thresh%_%ID%(%ARGS%) {
+Mat cv_thresh_%thresh%_%ID%(%ARGS%) {
     Mat result;
     threshold(arg0, result, %thresh%, 255, THRESH_BINARY);
     return result;

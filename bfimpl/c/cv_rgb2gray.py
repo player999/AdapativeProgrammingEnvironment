@@ -2,18 +2,20 @@ from bfimpl.bfunc import generateId
 
 
 PATTERN = """//Start:Declarations
-Mat cv_ones_%h%_%w%_%ID%(%ARGS%);
+Mat cv_rgb2gray_%ID%(%ARGS%);
 
 //Stop:Declarations
 //Start:Definitions
-Mat cv_ones_%h%_%w%_%ID%(%ARGS%) {
-    return Mat::ones(%h%, %w%, CV_8U);
+Mat cv_rgb2gray_%ID%(%ARGS%) {
+    Mat gray;
+    cvtColor(arg0, gray, CV_BGR2GRAY);
+    return gray;
 }
 
 //Stop:Definitions
 """
 
-def generate(n, h, w):
+def generate(n):
     identification = generateId()
     arguments = ""
     for i in range(0, n):
@@ -22,6 +24,4 @@ def generate(n, h, w):
     code = PATTERN
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
-    code = code.replace("%h%", str(h))
-    code = code.replace("%w%", str(w))
-    return "cv_ones_%d_%d_%s" % (h, w, identification), code
+    return "cv_rgb2gray_%s" % (identification), code

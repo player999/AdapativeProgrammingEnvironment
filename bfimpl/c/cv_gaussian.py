@@ -2,11 +2,11 @@ from bfimpl.bfunc import generateId
 
 
 PATTERN = """//Start:Declarations
-int cv_gaussian_%sz%_%sigma%_%ID%(%ARGS%);
+Mat cv_gaussian_%sz%_%sigma%_%ID%(%ARGS%);
 
 //Stop:Declarations
 //Start:Definitions
-int cv_gaussian_%sz%_%sigma%_%ID%(%ARGS%) {
+Mat cv_gaussian_%sz%_%sigma%_%ID%(%ARGS%) {
     Mat blured;
     GaussianBlur(arg0, blured, cv::Size(%sz%,%sz%), %sigma%);
     return blured;
