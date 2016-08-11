@@ -2,16 +2,14 @@ from bfimpl.bfunc import generateId
 
 
 PATTERN = """//Start:Declarations
-std::vector<std::vector<Point> > cv_findcontours_%ID%(%ARGS%);
+Mat cv_bothat_%ID%(%ARGS%);
 
 //Stop:Declarations
 //Start:Definitions
-std::vector<std::vector<Point> > cv_findcontours_%ID%(%ARGS%) {
-    std::vector<std::vector<Point> > contours;
-    std::vector<cv::Vec4i> hierarchy;
-    findContours(arg0.clone(), contours, hierarchy, cv::RETR_LIST,
-		cv::CHAIN_APPROX_SIMPLE);
-    return contours;
+Mat cv_bothat_%ID%(%ARGS%) {
+    Mat result;
+    morphologyEx(arg0, result, MORPH_BLACKHAT, arg1);
+    return result;
 }
 
 //Stop:Definitions
@@ -26,4 +24,4 @@ def generate(n):
     code = PATTERN
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
-    return "cv_findcontours_%s" % (identification), code
+    return "cv_bothat_%s" % (identification), code
