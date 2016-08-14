@@ -142,6 +142,51 @@ def cvThresh(n, t):
     f = Function(function, fname, n, [(fname, code)])
     return f
 
+# Convert cv matrix to gray
+def cvRgb2Gray(n):
+    imp = loadImplementation("cv_rgb2gray")
+    (fname, code) = imp(n)
+    def function(*args):
+        CompError("cvThresh not implemented")
+    f = Function(function, fname, n, [(fname, code)])
+    return f
+
+# Calculate gaussian
+def cvGaussian(n, sz, sigma):
+    imp = loadImplementation("cv_gaussian")
+    (fname, code) = imp(n, sz, sigma)
+    def function(*args):
+        CompError("cvGaussian not implemented")
+    f = Function(function, fname, n, [(fname, code)])
+    return f
+
+# Convert cv matrix to gray
+def cvFindContours(n):
+    imp = loadImplementation("cv_findcontours")
+    (fname, code) = imp(n)
+    def function(*args):
+        CompError("cvFindContours not implemented")
+    f = Function(function, fname, n, [(fname, code)])
+    return f
+
+# Morphology close
+def cvClose(n):
+    imp = loadImplementation("cv_close")
+    (fname, code) = imp(n)
+    def function(*args):
+        CompError("cvClose not implemented")
+    f = Function(function, fname, n, [(fname, code)])
+    return f
+
+# Morphology close
+def cvBotHat(n):
+    imp = loadImplementation("cv_bothat")
+    (fname, code) = imp(n)
+    def function(*args):
+        CompError("cvBothat not implemented")
+    f = Function(function, fname, n, [(fname, code)])
+    return f
+
 # Function table
 table = [
     {"pattern": "I_([0-9]+)_([0-9]+)", "f": select, "genpattern": "I_%d_%d", "name": "Selector", "args": ["Index", "Arity"]},
@@ -152,6 +197,11 @@ table = [
     {"pattern": "eq([0-9]+)", "f": equal, "genpattern": "eq%d", "name": "Equal", "args": ["Arity"]},
     {"pattern": "cvOnes([0-9]+)_([0-9]+)_([0-9]+)", "f": cvOne, "genpattern": "cv_ones_%d_%d", "name": "Ones", "args": ["Arity", "Height", "Width"]},
     {"pattern": "cvThresh([0-9]+)_([0-9]+)", "f": cvThresh, "genpattern": "cv_threshold_%d", "name": "Thresh", "args": ["Arity", "Thresh"]},
+    {"pattern": "cvRgb2Gray([0-9]+)", "f": cvRgb2Gray, "genpattern": "cv_rgb2gray_%d", "name": "RGB2Gray", "args": ["Arity"]},
+    {"pattern": "cvGaussian([0-9]+)_([0-9]+)_([0-9]+)", "f": cvGaussian, "genpattern": "cv_gaussian_%s_%d", "name": "Gaussian", "args": ["Arity", "Size", "Sigma"]},
+    {"pattern": "cvFindContours([0-9]+)", "f": cvFindContours, "genpattern": "cv_findcontours_%d", "name": "FindContours", "args": ["Arity"]},
+    {"pattern": "cvClose([0-9]+)", "f": cvClose, "genpattern": "cv_close_%d", "name": "MorphClose", "args": ["Arity"]},
+    {"pattern": "cvBothat([0-9]+)", "f": cvBotHat, "genpattern": "cv_bothat_%d", "name": "MorphBothat", "args": ["Arity"]}
 ]
 
 
