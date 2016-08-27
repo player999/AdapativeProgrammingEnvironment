@@ -2,12 +2,12 @@ from compimpl.compos import generateId
 
 
 PATTERN = """//Start:Declarations
-int superposition_%ID%(%ARGS%);
+%RTYPE% superposition_%ID%(%ARGS%);
 
 //Stop:Declarations
 //Start:Definitions
-int superposition_%ID%(%ARGS%) {
-    int retval;
+%RTYPE% superposition_%ID%(%ARGS%) {
+    %RTYPE% retval;
 %RESULTSD%
 %COMPUTER%
 %CALL%
@@ -25,7 +25,7 @@ def generate(*args):
     arggs = ""
     ar = args[0]
     for i in range(0, ar[1].argc):
-        arguments += "int arg%d, " % (i + 1)
+        arguments += "%s arg%d, " % (ar[i+1].types[0], i + 1)
         arggs += "arg%d, " % (i + 1)
     arguments = arguments[:-2]
     arggs = arggs[:-2]
@@ -34,7 +34,7 @@ def generate(*args):
     computer = ""
     resultsar = ""
     for i in range(1, len(ar)):
-        resultsd += "    int result%d;\n" % i
+        resultsd += "    %s result%d;\n" % (ar[i].types[0], i)
         computer += "    result%d = %s(%s);\n" % (i, ar[i].name, arggs)
         resultsar += "result%d, " % i
     resultsar = resultsar[:-2]
@@ -45,4 +45,5 @@ def generate(*args):
     code = code.replace("%RESULTSD%", resultsd)
     code = code.replace("%COMPUTER%", computer)
     code = code.replace("%CALL%", call)
-    return "superposition_%s" % identification, code
+    code = code.replace("%RTYPE%", ar[0].types[0])
+    return "superposition_%s" % identification, code, ar[0].types[0]

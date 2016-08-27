@@ -50,7 +50,7 @@ class PPASuperposition(Composition):
 
     def function(self):
         imp = loadImplementation("superposition")
-        (fname, code) = imp(self.functions)
+        (fname, code, tpe) = imp(self.functions)
 
         def f(*args):
             check_arguments(self.functions[1].argc, *args)
@@ -62,7 +62,7 @@ class PPASuperposition(Composition):
         new_src = join_sources(self.functions)
         new_src.append((fname, code))
         func = Function(f, fname, self.functions[1].argc, new_src)
-
+        func.types[0] = tpe
         return func
 
 

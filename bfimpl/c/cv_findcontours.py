@@ -9,7 +9,7 @@ std::vector<std::vector<Point> > cv_findcontours_%ID%(%ARGS%);
 std::vector<std::vector<Point> > cv_findcontours_%ID%(%ARGS%) {
     std::vector<std::vector<Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
-    findContours(arg0.clone(), contours, hierarchy, cv::RETR_LIST,
+    findContours(arg1.clone(), contours, hierarchy, cv::RETR_LIST,
 		cv::CHAIN_APPROX_SIMPLE);
     return contours;
 }
@@ -26,4 +26,4 @@ def generate(n):
     code = PATTERN
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
-    return "cv_findcontours_%s" % (identification), code
+    return "cv_findcontours_%s" % (identification), code, "std::vector<std::vector<Point> >"

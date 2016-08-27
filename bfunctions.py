@@ -127,64 +127,71 @@ def equal(n):
 # Generate CV matrix of ones
 def cvOne(n, h, w):
     imp = loadImplementation("cv_one")
-    (fname, code) = imp(n, h, w)
+    (fname, code, tpe) = imp(n, h, w)
     def function(*args):
         CompError("cvOne not implemented")
     f = Function(function, fname, n, [(fname, code)])
+    f.types[0] = tpe
     return f
 
 # Threshold cv matrix
 def cvThresh(n, t):
     imp = loadImplementation("cv_thresh")
-    (fname, code) = imp(n, t)
+    (fname, code, tpe) = imp(n, t)
     def function(*args):
         CompError("cvThresh not implemented")
     f = Function(function, fname, n, [(fname, code)])
+    f.types[0] = tpe
     return f
 
 # Convert cv matrix to gray
 def cvRgb2Gray(n):
     imp = loadImplementation("cv_rgb2gray")
-    (fname, code) = imp(n)
+    (fname, code, tpe) = imp(n)
     def function(*args):
         CompError("cvThresh not implemented")
     f = Function(function, fname, n, [(fname, code)])
+    f.types[0] = tpe
     return f
 
 # Calculate gaussian
 def cvGaussian(n, sz, sigma):
     imp = loadImplementation("cv_gaussian")
-    (fname, code) = imp(n, sz, sigma)
+    (fname, code, tpe) = imp(n, sz, sigma)
     def function(*args):
         CompError("cvGaussian not implemented")
     f = Function(function, fname, n, [(fname, code)])
+    f.types[0] = tpe
     return f
 
 # Convert cv matrix to gray
 def cvFindContours(n):
     imp = loadImplementation("cv_findcontours")
-    (fname, code) = imp(n)
+    (fname, code, tpe) = imp(n)
     def function(*args):
         CompError("cvFindContours not implemented")
     f = Function(function, fname, n, [(fname, code)])
+    f.types[0] = tpe
     return f
 
 # Morphology close
 def cvClose(n):
     imp = loadImplementation("cv_close")
-    (fname, code) = imp(n)
+    (fname, code, tpe) = imp(n)
     def function(*args):
         CompError("cvClose not implemented")
     f = Function(function, fname, n, [(fname, code)])
+    f.types[0] = tpe
     return f
 
 # Morphology close
 def cvBotHat(n):
     imp = loadImplementation("cv_bothat")
-    (fname, code) = imp(n)
+    (fname, code, tpe) = imp(n)
     def function(*args):
         CompError("cvBothat not implemented")
     f = Function(function, fname, n, [(fname, code)])
+    f.types[0] = tpe
     return f
 
 # Function table

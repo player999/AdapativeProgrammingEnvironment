@@ -7,7 +7,7 @@ Mat cv_thresh_%thresh%_%ID%(%ARGS%);
 //Start:Definitions
 Mat cv_thresh_%thresh%_%ID%(%ARGS%) {
     Mat result;
-    threshold(arg0, result, %thresh%, 255, THRESH_BINARY);
+    threshold(arg1, result, %thresh%, 255, THRESH_BINARY);
     return result;
 }
 
@@ -24,4 +24,4 @@ def generate(n, thresh):
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
     code = code.replace("%thresh%", str(thresh))
-    return "cv_thresh_%d_%s" % (thresh, identification), code
+    return "cv_thresh_%d_%s" % (thresh, identification), code, "Mat"

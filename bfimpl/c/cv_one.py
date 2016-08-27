@@ -24,4 +24,4 @@ def generate(n, h, w):
     code = code.replace("%ARGS%", arguments)
     code = code.replace("%h%", str(h))
     code = code.replace("%w%", str(w))
-    return "cv_ones_%d_%d_%s" % (h, w, identification), code
+    return "cv_ones_%d_%d_%s" % (h, w, identification), code, "Mat"

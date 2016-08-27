@@ -21,6 +21,8 @@ class Function:
 
         if (type(argc) is int) or (type(argc) is str):
             self.argc = argc
+            self.types = ["int"] * (argc + 1)
+
         else:
             raise CompError("Argument count must be integer")
 

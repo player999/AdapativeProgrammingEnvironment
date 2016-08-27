@@ -8,7 +8,7 @@ Mat cv_gaussian_%sz%_%sigma%_%ID%(%ARGS%);
 //Start:Definitions
 Mat cv_gaussian_%sz%_%sigma%_%ID%(%ARGS%) {
     Mat blured;
-    GaussianBlur(arg0, blured, cv::Size(%sz%,%sz%), %sigma%);
+    GaussianBlur(arg1, blured, cv::Size(%sz%,%sz%), %sigma%);
     return blured;
 }
 
@@ -26,4 +26,4 @@ def generate(n, sz, sigma):
     code = code.replace("%ARGS%", arguments)
     code = code.replace("%sz%", str(sz))
     code = code.replace("%sigma%", str(sigma))
-    return "cv_gaussian_%d_%s_%s" % (sz, str(sigma).replace(".", ""), identification), code
+    return "cv_gaussian_%d_%s_%s" % (sz, str(sigma).replace(".", ""), identification), code, "Mat"

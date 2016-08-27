@@ -8,7 +8,7 @@ Mat cv_bothat_%ID%(%ARGS%);
 //Start:Definitions
 Mat cv_bothat_%ID%(%ARGS%) {
     Mat result;
-    morphologyEx(arg0, result, MORPH_BLACKHAT, arg1);
+    morphologyEx(arg1, result, MORPH_BLACKHAT, arg1);
     return result;
 }
 
@@ -24,4 +24,4 @@ def generate(n):
     code = PATTERN
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
-    return "cv_bothat_%s" % (identification), code
+    return "cv_bothat_%s" % (identification), code, "Mat"

@@ -8,7 +8,7 @@ Mat cv_rgb2gray_%ID%(%ARGS%);
 //Start:Definitions
 Mat cv_rgb2gray_%ID%(%ARGS%) {
     Mat gray;
-    cvtColor(arg0, gray, CV_BGR2GRAY);
+    cvtColor(arg1, gray, CV_BGR2GRAY);
     return gray;
 }
 
@@ -24,4 +24,4 @@ def generate(n):
     code = PATTERN
     code = code.replace("%ID%", identification)
     code = code.replace("%ARGS%", arguments)
-    return "cv_rgb2gray_%s" % (identification), code
+    return "cv_rgb2gray_%s" % (identification), code, "Mat"
